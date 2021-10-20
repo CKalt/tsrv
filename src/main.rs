@@ -11,6 +11,8 @@ struct Opt {
     echo: bool,
     #[structopt(short = "d", long = "ds_server")]
     ds_server: bool,
+    #[structopt(short = "w", long = "web")]
+    web: bool,
 }
 
 type Handler = fn(TcpStream);
@@ -202,8 +204,8 @@ fn handle_ds_server_connection(mut stream: TcpStream) {
 }
 "#;
 
-    stream.write(response_header.as_bytes()).unwrap();
     println!("sending response_header=[{}]", response_header);
+    stream.write(response_header.as_bytes()).unwrap();
     for response_item in response_items.iter() {
         println!("sending response_item=[{}]", response_item);
         stream.write(response_item.as_bytes()).unwrap();
@@ -224,11 +226,11 @@ fn main() {
             println!("using echo");
             handle_echo_connection
         } else if opt.ds_server {
-            println!("using ds_server");
-            handle_ds_server_connection 
-        } else {
             println!("using web)");
             handle_web_connection 
+        } else {
+            println!("using ds_server");
+            handle_ds_server_connection 
         };
 
     for stream in listener.incoming() {
